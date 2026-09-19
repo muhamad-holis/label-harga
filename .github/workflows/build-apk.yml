@@ -31,12 +31,14 @@ jobs:
         run: |
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           if ! grep -q "BLUETOOTH_CONNECT" "$MANIFEST"; then
-            sed -i '/<manifest /a \\
-    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />\\
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />\\
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />\\
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />\\
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />' "$MANIFEST"
+            {
+              echo '    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />'
+              echo '    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />'
+              echo '    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />'
+              echo '    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />'
+              echo '    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />'
+            } > /tmp/bt_permissions.xml
+            sed -i '/<manifest /r /tmp/bt_permissions.xml' "$MANIFEST"
           fi
 
       - name: Ambil dependency
