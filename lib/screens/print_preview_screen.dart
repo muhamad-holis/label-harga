@@ -25,7 +25,19 @@ class _PrintPreviewScreenState extends ConsumerState<PrintPreviewScreen> {
     final totalLabel = items.fold<int>(0, (sum, e) => sum + e.quantity);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Preview Label')),
+      appBar: AppBar(
+        title: const Text('Preview Label'),
+        actions: [
+          if (items.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                ref.read(selectedUnitsProvider.notifier).clear();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Hapus Semua'),
+            ),
+        ],
+      ),
       body: items.isEmpty
           ? const Center(child: Text('Tidak ada label dipilih'))
           : ListView.builder(
@@ -38,6 +50,9 @@ class _PrintPreviewScreenState extends ConsumerState<PrintPreviewScreen> {
                   unitLabel: item.unit.unitLabel,
                   price: item.unit.price,
                   quantity: item.quantity,
+                  onRemove: () => ref
+                      .read(selectedUnitsProvider.notifier)
+                      .remove(item.unit.id),
                 );
               },
             ),
@@ -133,12 +148,14 @@ class _LabelPreviewCard extends StatelessWidget {
   final String unitLabel;
   final int price;
   final int quantity;
+  final VoidCallback onRemove;
 
   const _LabelPreviewCard({
     required this.productName,
     required this.unitLabel,
     required this.price,
     required this.quantity,
+    required this.onRemove,
   });
 
   @override
@@ -149,10 +166,23 @@ class _LabelPreviewCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text(
-              productName,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    productName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.close, size: 18),
+                  tooltip: 'Batalkan item ini',
+                  onPressed: onRemove,
+                ),
+              ],
             ),
             Text(
               '/ $unitLabel',

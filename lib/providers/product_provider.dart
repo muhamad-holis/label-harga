@@ -87,5 +87,22 @@ class SelectedUnitsNotifier extends StateNotifier<Map<int, SelectedUnitItem>> {
     };
   }
 
+  void remove(int unitId) {
+    final next = Map<int, SelectedUnitItem>.from(state);
+    next.remove(unitId);
+    state = next;
+  }
+
+  /// Buang seleksi yang unitId-nya sudah tidak ada lagi di database
+  /// (misal satuan/produknya baru saja dihapus atau diedit).
+  void pruneToExisting(Set<int> validUnitIds) {
+    if (state.isEmpty) return;
+    final next = Map<int, SelectedUnitItem>.from(state)
+      ..removeWhere((unitId, _) => !validUnitIds.contains(unitId));
+    if (next.length != state.length) {
+      state = next;
+    }
+  }
+
   void clear() => state = {};
 }
