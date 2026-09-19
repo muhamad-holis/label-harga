@@ -121,6 +121,16 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            'Dibuat oleh Muhamad Holis © 2026',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
+          ),
+        ),
+      ),
     );
   }
 }
