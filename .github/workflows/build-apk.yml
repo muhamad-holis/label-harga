@@ -25,7 +25,7 @@ jobs:
       # yang sudah ada. Dijalankan tiap build karena runner selalu baru,
       # jadi tidak perlu di-commit balik ke repo.
       - name: Lengkapi folder android/
-        run: flutter create --platforms=android .
+        run: flutter create --platforms=android --project-name label_harga .
 
       - name: Tambahkan izin Bluetooth
         run: |
