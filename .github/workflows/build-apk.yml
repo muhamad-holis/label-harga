@@ -27,6 +27,10 @@ jobs:
       - name: Lengkapi folder android/
         run: flutter create --platforms=android --project-name label_harga .
 
+      - name: Perbarui versi Kotlin plugin
+        run: |
+          sed -i 's/id "org.jetbrains.kotlin.android" version "[^"]*"/id "org.jetbrains.kotlin.android" version "1.9.24"/' android/settings.gradle
+
       - name: Tambahkan izin Bluetooth
         run: |
           MANIFEST="android/app/src/main/AndroidManifest.xml"
