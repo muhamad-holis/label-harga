@@ -15,6 +15,20 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Setiap kali daftar produk berubah (diedit/dihapus), buang seleksi
+    // yang unit-nya sudah tidak ada lagi — mencegah label basi ikut
+    // ke-preview/tercetak ulang tanpa disadari.
+    ref.listen<AsyncValue<List<ProductWithUnits>>>(productListProvider,
+        (previous, next) {
+      next.whenData((list) {
+        final validUnitIds = <int>{
+          for (final p in list)
+            for (final u in p.units) u.id,
+        };
+        ref.read(selectedUnitsProvider.notifier).pruneToExisting(validUnitIds);
+      });
+    });
+
     final productsAsync = ref.watch(filteredProductListProvider);
     final selected = ref.watch(selectedUnitsProvider);
     final printerState = ref.watch(printerProvider);
@@ -106,6 +120,16 @@ class HomeScreen extends ConsumerWidget {
             child: const Icon(Icons.add),
           ),
         ],
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            'Dibuat oleh Muhamad Holis © 2026',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
+          ),
+        ),
       ),
     );
   }
