@@ -16,7 +16,6 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
           channel: 'stable'
           cache: true
 
@@ -26,10 +25,6 @@ jobs:
       # jadi tidak perlu di-commit balik ke repo.
       - name: Lengkapi folder android/
         run: flutter create --platforms=android --project-name label_harga .
-
-      - name: Perbarui versi Kotlin plugin
-        run: |
-          sed -i 's/id "org.jetbrains.kotlin.android" version "[^"]*"/id "org.jetbrains.kotlin.android" version "1.9.24"/' android/settings.gradle
 
       - name: Tambahkan izin Bluetooth
         run: |
