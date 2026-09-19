@@ -43,6 +43,9 @@ jobs:
       - name: Ambil dependency
         run: flutter pub get
 
+      - name: Generate icon aplikasi
+        run: dart run flutter_launcher_icons
+
       - name: Generate kode Drift
         run: dart run build_runner build --delete-conflicting-outputs
 
