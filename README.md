@@ -57,11 +57,24 @@ Tambahkan di dalam tag `<manifest>` pada
 4. Centang barang yang mau dicetak, atur jumlah label per barang.
 5. Ketuk "Cetak" — label langsung tercetak, siap digunting & ditempel.
 
+## Fitur (v2)
+
+- Satu barang bisa punya beberapa satuan & harga sekaligus (Dus/Pack/Pcs,
+  atau satuan bebas apa saja) — bebas jumlahnya, tidak wajib 3.
+- Pencarian nama barang di halaman utama.
+- Preview label (tampilan mirip hasil cetak) sebelum benar-benar dicetak.
+- Riwayat cetak, lengkap dengan tombol "cetak ulang" per entri.
+
 ## Catatan
 
-- Default kertas diset **58mm** di `home_screen.dart`
-  (`paperSizeMm: 58`). Ganti ke `80` kalau printer memakai roll 80mm.
+- **PENTING**: karena struktur database berubah (harga per satuan, bukan
+  satu harga per barang), kalau HP sudah pernah pasang APK versi
+  sebelumnya, **uninstall dulu APK lama** sebelum install yang baru ini —
+  supaya tidak crash karena skema database lama tidak cocok.
+- Default kertas diset **58mm** di `print_preview_screen.dart` &
+  `history_screen.dart` (`paperSizeMm: 58`). Ganti ke `80` kalau printer
+  memakai roll 80mm.
 - Data barang tersimpan lokal (SQLite via Drift) — tidak perlu koneksi
-  internet, dan riwayat barang bisa dipakai cetak ulang kapan saja.
+  internet.
 - Struktur & stack sengaja disamakan dengan KasirkuPro (Flutter + Riverpod +
   Drift) supaya mudah dipelihara/di-merge kalau nanti mau digabung.
