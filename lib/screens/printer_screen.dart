@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/printer_provider.dart';
+import '../services/print_service.dart';
 
 class PrinterScreen extends ConsumerStatefulWidget {
   const PrinterScreen({super.key});
@@ -11,11 +12,27 @@ class PrinterScreen extends ConsumerStatefulWidget {
 }
 
 class _PrinterScreenState extends ConsumerState<PrinterScreen> {
+  bool _isTestPrinting = false;
+
   @override
   void initState() {
     super.initState();
     Future.microtask(
       () => ref.read(printerProvider.notifier).loadPairedDevices(),
+    );
+  }
+
+  Future<void> _testPrint() async {
+    setState(() => _isTestPrinting = true);
+    final ok = await PrintService.testPrint(paperSizeMm: 58);
+    if (!mounted) return;
+    setState(() => _isTestPrinting = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok ? 'Test print terkirim ke printer' : 'Gagal mencetak, cek koneksi printer',
+        ),
+      ),
     );
   }
 
@@ -99,6 +116,28 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: state.connected == null
+          ? null
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: FilledButton.icon(
+                  onPressed: _isTestPrinting ? null : _testPrint,
+                  icon: _isTestPrinting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.receipt_long),
+                  label: Text(
+                    _isTestPrinting
+                        ? 'Mencetak...'
+                        : 'Test Print ke ${state.connected!.name}',
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }

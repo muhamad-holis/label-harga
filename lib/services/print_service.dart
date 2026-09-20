@@ -46,6 +46,39 @@ class PrintService {
     return PrintBluetoothThermal.writeBytes(bytes);
   }
 
+  /// Cetak satu label uji coba, untuk memastikan printer & koneksi benar.
+  static Future<bool> testPrint({required int paperSizeMm}) async {
+    final bool connected = await PrintBluetoothThermal.connectionStatus;
+    if (!connected) return false;
+
+    final profile = await _profile();
+    final paper = paperSizeMm == 80 ? PaperSize.mm80 : PaperSize.mm58;
+    final generator = Generator(paper, profile);
+
+    List<int> bytes = [];
+    bytes += generator.text(
+      'TEST PRINT',
+      styles: const PosStyles(
+        align: PosAlign.center,
+        bold: true,
+        height: PosTextSize.size2,
+        width: PosTextSize.size2,
+      ),
+    );
+    bytes += generator.text(
+      'Label Harga',
+      styles: const PosStyles(align: PosAlign.center),
+    );
+    bytes += generator.text(
+      'Printer terhubung dengan baik',
+      styles: const PosStyles(align: PosAlign.center),
+    );
+    bytes += generator.hr(ch: '-');
+    bytes += generator.feed(2);
+
+    return PrintBluetoothThermal.writeBytes(bytes);
+  }
+
   /// Format satu label: nama produk (bold) + satuan (kecil) + harga
   /// (besar, tengah) + garis potong.
   static List<int> _buildSingleLabel(Generator generator, LabelItem item) {

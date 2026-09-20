@@ -23,6 +23,7 @@ dependencies:
   # Printer Bluetooth thermal + ESC/POS
   print_bluetooth_thermal: ^1.1.5
   esc_pos_utils_plus: ^2.0.4
+  permission_handler: ^11.3.1
 
   # Format angka rupiah
   intl: ^0.19.0

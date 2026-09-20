@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 
 class PrinterDevice {
@@ -55,6 +56,15 @@ class PrinterNotifier extends StateNotifier<PrinterState> {
   Future<void> loadPairedDevices() async {
     state = state.copyWith(isScanning: true, clearError: true);
     try {
+      final granted = await _requestBluetoothPermissions();
+      if (!granted) {
+        state = state.copyWith(
+          isScanning: false,
+          error:
+              'Izin Bluetooth ditolak. Buka Pengaturan > Aplikasi > Label Harga > Izin, lalu aktifkan izin Bluetooth & Lokasi.',
+        );
+        return;
+      }
       final bool permitted = await PrintBluetoothThermal.bluetoothEnabled;
       if (!permitted) {
         state = state.copyWith(
@@ -74,6 +84,28 @@ class PrinterNotifier extends StateNotifier<PrinterState> {
     } catch (e) {
       state = state.copyWith(isScanning: false, error: 'Gagal memuat daftar printer: $e');
     }
+  }
+
+  /// Minta izin Bluetooth (Android 12+: BLUETOOTH_CONNECT & BLUETOOTH_SCAN;
+  /// Android lama: lokasi) yang dibutuhkan agar plugin printer bisa membaca
+  /// status Bluetooth dan daftar perangkat yang sudah di-pairing.
+  Future<bool> _requestBluetoothPermissions() async {
+    final statuses = await [
+      Permission.bluetoothConnect,
+      Permission.bluetoothScan,
+      Permission.locationWhenInUse,
+    ].request();
+
+    // Di Android versi lama, permission bluetoothConnect/Scan tidak ada
+    // (restricted/tidak berlaku) — jangan anggap itu sebagai penolakan.
+    final relevant = statuses.entries.where(
+      (e) => e.value != PermissionStatus.restricted,
+    );
+    return relevant.every(
+      (e) =>
+          e.value == PermissionStatus.granted ||
+          e.value == PermissionStatus.limited,
+    );
   }
 
   Future<bool> connect(PrinterDevice device) async {
